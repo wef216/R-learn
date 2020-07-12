@@ -12,11 +12,30 @@ flights #view the data
 # syntax: input(dataframe) --> output(dataframe)
 #         never modify the input data frame
 
-# select all flights on January 1st
+# filter all flights on January 1st
 flights %>% filter(month == 1 , day == 1)
-# select all flights in Nov, and Dec
+# filter  all flights in Nov, and Dec
 flights %>% fliter(month == 11 |month == 12)  # version 1
 flights %>% filter(month %in% c(11,12)) # version 2
 
+# filter all flights that were not delayed (arrival or departure) by more than 2 hours
+flights %>% filter(!(arr_time > 120 | dep_time > 120))  #version 1
+flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
 
-
+# find all flights that:
+  #1) had a arrival delay of two or more hours
+  filter(flights, arr_delay >=120)
+  #2) flew to hourston
+  filter(flights, dest %in% c("HOU", "IAH")) #version 1
+  filter(flights, dest == "HOU" | dest == "IAH") #version 2
+  #3) were operated by UA or Delta
+  filter(flights, carrier %in% c("UA", "Delta"))
+  #4) departed in summer (July, August, September)
+  filter(flights, month %in% c(7,8,9))
+  #5) arrived more than 2 hours later but did not leave late
+  filter(flights, dep_delay == 0 & arr_delay >= 120)
+  #6) were delayed by at least an hour, but made up over 30 mins in flight
+  filter(flights, dep_delay >= 60 & arr_delay <= 30)
+  #7) departed between midnight and 6 am 
+  filter(flights, dep_time >= 2400 & dep_time <= 6)
+  
