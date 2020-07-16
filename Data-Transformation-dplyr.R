@@ -46,3 +46,30 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
 # number of flights with missing depart time
   sum(is.na(flights$dep_time))
 
+  
+  
+  
+  
+  
+# <Arrange Rows with arrange() >
+# syntax: input(dataframe) --> output(dataframe)
+#         option: desc() to reorder in desccending order  
+#         never modify the input data frame  
+
+# sort all missing values to the start
+  flights %>%
+    arrange(desc(is.na(dep_time)))
+
+# find the most delayed flights
+  flights %>%
+    arrange(desc(dep_delay))
+# find the fastest flgiht
+  flights %>%
+    arrange(air_time)
+# find the flights travelling the longest distance  
+  flights %>%
+    arrange(desc(distance))         # version 1
+   
+  flights[which.max(flights$distance),]   #version 2
+
+  
