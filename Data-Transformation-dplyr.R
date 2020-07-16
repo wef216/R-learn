@@ -37,5 +37,12 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
   #6) were delayed by at least an hour, but made up over 30 mins in flight
   filter(flights, dep_delay >= 60 & arr_delay <= 30)
   #7) departed between midnight and 6 am 
-  filter(flights, dep_time >= 2400 & dep_time <= 6)
+  filter(flights, dep_time >= 1 & dep_time <= 6)
   
+  
+# Betwen function
+  filter(flights, between(dep_time, 1,6))
+  
+# number of flights with missing depart time
+  sum(is.na(flights$dep_time))
+
