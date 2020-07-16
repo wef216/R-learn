@@ -117,3 +117,23 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
   select(flights, any_of(vars))
   
   
+  
+  
+  #< Add New Variables with mutate() & transmute>
+  # syntax: input(dataframe) --> output(dataframe)
+  #         never modify the input data frame 
+  # mutate() creates a new variable and put it to the end of the remainning variables
+  # transmute() creates a new variablea and keep only the new variables.
+  
+  # find the most delayed flights
+  flights %>%
+    mutate(delay_rank = min_rank(dep_delay)) %>%
+    arrange(desc(delay_rank))  #version 1
+  
+  
+  flights %>%
+    slice_max(dep_delay,n = 10)    #version 2
+  
+  
+  
+  
