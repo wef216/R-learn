@@ -73,3 +73,47 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
   flights[which.max(flights$distance),]   #version 2
 
   
+  
+
+  
+  
+# <Select Columns/Variables with select() >
+# syntax: input(dataframe) --> output(dataframe)
+#         year:day --> select variables from year to day
+#         -(year:day) --> drop variables from year to day
+#         common selection helpers: 
+#                     starts_with(), ends_with(), contains(), matches(), num_range(), everything(), all_of(), any_of()
+#         never modify the input data frame   
+  
+  
+# select the dep_time, dep_delay, arr_time, and arr_delay
+  flights %>%
+    select(dep_time, dep_delay, arr_time, arr_delay)  #version 1
+  
+  flights %>%
+    select(starts_with(c("dep_", "arr_")))   #version 2
+  
+  flights %>%
+    select(ends_with(c("_time", "_delay")) & !starts_with(c("sched_", "air_")))   #version 2  
+  
+ # including a variable multiple times
+  flights %>%
+    select(dep_time, dep_time)
+
+  flights %>%
+    select(depTime1 = dep_time, depTime2 = dep_time)
+  
+  
+  # modify the case ingnorance
+  select(flights, contains("TIME"))
+  select(flights, contains("TIME", ignore.case = F))
+  
+  # with everything() -- used to put some variable front and keep all other variables.
+  select(flights, sched_dep_time, sched_arr_time, everything())
+  
+  
+  # one_of() selection helper
+  vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+  select(flights, any_of(vars))
+  
+  
