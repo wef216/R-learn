@@ -5,7 +5,7 @@
 # <Prerequisites>
 library(dplyr)
 library(nycflights13)
-
+library(ggplot2)
 flights #view the data
 
 # <Filter Rows with filter()> : 
@@ -152,6 +152,59 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
   flights %>% group_by(year, month, day) %>% summarize(delay = mean(dep_delay, na.rm = T)) # version 2
   
   
+  # correlation between dist and delay
+  delays <- flights %>% 
+              group_by(dest) %>% 
+              summarize(count = n(), 
+                        dist = mean(distance, na.rm = T),
+                        delay = mean(arr_delay, na.rm = T)
+                        ) %>%
+              filter(count > 20, dest != "HNL")
+  
+  ggplot(delays, aes(dist, delay)) + geom_point(aes(size = count), alpha = 1/3) + geom_smooth(se = F)
+
   
   
+# < Missing Values >
+# The rule of missing values: if there is any missing values in the input, the output of the aggregation function will be a missing value
+# All aggregation functions have an na.rm option
   
+  # Remove the cancelled flights
+  not_cancelled <- flights %>% 
+    filter(!is.na(arr_delay), !is.na(dep_delay))
+  
+  flights %>% 
+    filter(!is.na(arr_delay) & !is.na(dep_delay))
+  
+# < Counts >
+# a count number : n()
+# a count of nonmissing values (sum!(is.na()))
+  
+  # identify the flights having the highest average delays
+  delays <- not_cancelled %>% 
+    group_by(tailnum) %>%
+    summarize(delay = mean(arr_delay), n = n())
+    
+ggplot(delays, aes(delay)) + geom_freqpoly(binwidth = 10)
+    
+ggplot(delays, aes(n, delay)) + geom_point(alpha = 1/10)  
+
+delays %>% filter(n > 25) %>% ggplot(aes(n, delay)) + geom_point(alpha = 1/10)  
+
+
+# < Grouping by Multiple Variables >
+# when grouping by multiple variables, each summary peels off one level of the grouping,
+# by default, peel off from the last one in the group_by 
+    daily <- group_by(flights, year, month, day)
+    (per_day <- summarize(daily, flights = n()))
+    (per_month <- summarize(per_day, flights = sum(flights)))
+    
+    daily <- group_by(flights, day, month, year)
+    (per_day <- summarize(daily, flights = n()))
+    (per_month <- summarize(per_day, flights = sum(flights)))
+
+    
+?ungroup    
+    
+vignette("window-functions")    
+    
