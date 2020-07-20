@@ -119,11 +119,11 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
   
   
   
-  #< Add New Variables with mutate() & transmute>
-  # syntax: input(dataframe) --> output(dataframe)
-  #         never modify the input data frame 
-  # mutate() creates a new variable and put it to the end of the remainning variables
-  # transmute() creates a new variablea and keep only the new variables.
+#< Add New Variables with mutate() & transmute>
+# syntax: input(dataframe) --> output(dataframe)
+#         never modify the input data frame 
+# mutate() creates a new variable and put it to the end of the remainning variables
+# transmute() creates a new variablea and keep only the new variables.
   
   # find the most delayed flights
   flights %>%
@@ -133,6 +133,24 @@ flights %>% filter(arr_time <= 120 & dep_time <= 120 ) #version 2
   
   flights %>%
     slice_max(dep_delay,n = 10)    #version 2
+  
+  
+    
+#< Grouped Summaries with Summarize() >  
+# It collapses a data frame to a single row.
+# input: a data frame
+# it is commonly used with group_by() function  
+# then perform function in the grouped units level
+  
+?summarize  
+  summarize(flights, delay = mean(dep_delay, na.rm = T))
+  
+  # Calculate the mean of delay by year, month, day.
+  by_day <- group_by(flights, year, month, day)
+  summarize(by_day, delay = mean(dep_delay, na.rm = T))   # version 1
+  
+  flights %>% group_by(year, month, day) %>% summarize(delay = mean(dep_delay, na.rm = T)) # version 2
+  
   
   
   
