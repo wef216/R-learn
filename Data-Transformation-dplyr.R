@@ -287,5 +287,64 @@ vignette("window-functions")
     arrange(desc(count))
 
   
+  # which plane has the worst on-time record
+  flights %>%
+    group_by(tailnum) %>%
+    summarize(
+      n = n(),
+      n_onTime = sum(dep_delay <= 0),
+      ratio_onTime = n_onTime/n
+    ) %>%
+    arrange(ratio_onTime, desc(n))
   
   
+  # what time of the day should you fly to avoid the dealy
+  flights %>%
+    group_by(sched_dep_time) %>%
+    summarize(
+      n = n(),
+      n_onTime = sum(dep_delay <= 0),
+      ratio_onTime = n_onTime / n,
+      delay_avg = mean(dep_delay, na.rm = T)
+    ) %>%
+    filter(n > 20) %>%
+    arrange(desc(ratio_onTime), desc(n), delay_avg)
+  
+  
+  # for each destination, compute the total mins of delay
+    flights %>%
+      filter(arr_delay > 0 ) %>%
+      group_by(dest) %>%
+      summarize(
+        delay_mins = sum(arr_delay, na.rm = T)
+      )
+    
+  # for each flight, compute the proportion of the total delay for its destination
+    flight_delay_share <- flights %>%
+      filter(arr_delay > 0 ) %>%
+      group_by(dest, origin, carrier, flight) %>%
+      summarize(
+        flight_delay_mins = sum(arr_delay)
+      ) %>%
+      ungroup()  %>%
+      group_by(dest) %>%
+      mutate(
+        dest_delay_mins = sum(flight_delay_mins),
+        flight_dest_delay_share = flight_delay_mins / dest_delay_mins
+      ) %>%
+      arrange(dest, desc(flight_dest_delay_share)) %>%
+      select(carrier, flight, origin, dest, flight_dest_delay_share)
+
+          
+   flights
+    
+   
+   # explore the correlation between the flgiht delay and preceding flight delay
+   delay_lag <- flights %>%
+     arrange(day, sched_dep_time)  %>%
+     mutate(
+       dep_delay_lag = lag(dep_delay)
+     ) %>%
+     select(day, sched_dep_time, carrier, origin, flight, dep_delay, dep_delay_lag) 
+       
+     
