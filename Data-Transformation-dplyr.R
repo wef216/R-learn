@@ -263,4 +263,29 @@ vignette("window-functions")
   not_cancelled %>% group_by(tailnum) %>% summarize(n = sum(distance))  
   
   
+  # Look at the number of flights cancelled per day
+  cancelled <- flights %>% 
+                  group_by(year, month, day) %>%
+                  summarize(
+                    count = n(),
+                    cancelled = sum(is.na(dep_delay) | is.na(arr_delay)),
+                    delayed = mean(dep_delay, na.rm = T)
+                  )
+                  
+  
+  ggplot(cancelled, aes(day, cancelled)) + geom_point(alpha = 1/3)
+  
+  ggplot(cancelled, aes(delayed, cancelled)) + geom_point(alpha = 1/3) + geom_smooth()
+  
+  
+  # Which carrier has the worst delays
+  flights %>% 
+     group_by(tailnum)  %>%
+     summarize(
+       count = sum(dep_delay > 0, na.rm = T)
+     ) %>%
+    arrange(desc(count))
+
+  
+  
   
