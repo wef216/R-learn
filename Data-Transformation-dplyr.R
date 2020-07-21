@@ -208,3 +208,59 @@ delays %>% filter(n > 25) %>% ggplot(aes(n, delay)) + geom_point(alpha = 1/10)
     
 vignette("window-functions")    
     
+
+
+# Brainstorm Exercises
+# A flight is 15 mins early 50% of the time and 15 mins late 50% of the time
+  flights %>% 
+    group_by(tailnum) %>%
+    summarize(
+      count = n(),
+      early = sum(arr_delay <= -15) / count,
+      later = sum(arr_delay >= 15) / count
+    ) %>%
+    filter(early == 0.5, later == 0.5)
+  
+# A flight is always 10 mins later
+  flights %>%
+    group_by(tailnum) %>%
+    summarize(
+      count = n(),
+      later_10min = sum(arr_delay >= 10)
+    ) %>%
+    filter(count == later_10min)
+
+# A flight is 30 mins early 50% of the time and 30mins late 50% of the time
+  flights %>% 
+    group_by(tailnum) %>%
+    summarize(
+      count = n(),
+      early = sum(arr_delay <= -30) / count,
+      later = sum(arr_delay >= 30) / count
+    ) %>%
+    filter(early == 0.5, later == 0.5)
+  
+ # 99% of the time the flight is on time and 1% of the time it is 2 hours late
+  flights %>%
+    group_by(tailnum) %>%
+    summarize(
+      count = n(),
+      onTime = sum(arr_delay <= 0),
+      later_2h = sum(arr_delay >= 120)
+    ) %>%
+    filter(onTime/count == 0.99, later_2h/count == 0.01)
+
+  
+  
+  # number of destinations in the non-cancelled flights
+  not_cancelled %>% count(dest)  # version 1
+  
+  not_cancelled %>% group_by(dest) %>% summarize(count = n())  # version 2
+  
+  # number of tailnum weighted by distance
+  not_cancelled %>% count(tailnum, wt = distance)   # version 1
+  
+  not_cancelled %>% group_by(tailnum) %>% summarize(n = sum(distance))  
+  
+  
+  
