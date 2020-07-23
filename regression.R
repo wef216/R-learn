@@ -93,3 +93,9 @@ coef(summary(sat.region))
  # setting factor reference groups and contrast
 contrasts(states.data$region)  #west is the contrast
 
+coef(summary(lm(csat ~ C(region, base = 1), data = states.data)))
+
+coef(summary(lm(csat ~ C(region, contr.helmert), data = states.data)))
+
+
+?contr.helmert
