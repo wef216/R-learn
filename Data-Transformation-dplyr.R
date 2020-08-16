@@ -341,10 +341,44 @@ vignette("window-functions")
    
    # explore the correlation between the flgiht delay and preceding flight delay
    delay_lag <- flights %>%
-     arrange(day, sched_dep_time)  %>%
+     arrange(origin, month, day, sched_dep_time)  %>%
+     group_by(origin) %>%
      mutate(
        dep_delay_lag = lag(dep_delay)
      ) %>%
-     select(day, sched_dep_time, carrier, origin, flight, dep_delay, dep_delay_lag) 
-       
+     filter(!is.na(dep_delay), !is.na(dep_delay_lag)) %>%
+     select(day, sched_dep_time, carrier, origin, flight, dep_delay, dep_delay_lag) %>%
+     group_by(origin, dep_delay_lag) %>%
+     summarize(
+       dep_delay_avg = mean(dep_delay, na.rm = T)
+     )
+      
+   delay_lag 
+   ggplot(delay_lag, aes(dep_delay_lag, dep_delay_avg)) + geom_point() + geom_smooth() + facet_wrap(~origin, ncol = 1)
+   
+   
+   
+   # Find all destinations that are flown by at least two carriers and rank them
+   flights %>%
+     group_by(dest) %>%
+     summarize(
+       n_carrier = n_distinct(carrier)
+     ) %>%
+     mutate(
+       rank = rank(desc(n_carrier))
+     )   # this is to rank the dest
+   
+   
+   flights %>%
+     group_by(dest) %>%
+     mutate(
+       n_carrier = n_distinct(carrier)
+     ) %>%
+     filter(n_carrier > 1) %>%
+     group_by(carrier)  %>%
+     summarize(
+       n_dest = n_distinct(dest)
+     )  %>%
+      arrange(desc(n_dest)) # this is to rank the carriers
+   
      

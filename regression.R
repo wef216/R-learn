@@ -99,3 +99,50 @@ coef(summary(lm(csat ~ C(region, contr.helmert), data = states.data)))
 
 
 ?contr.helmert
+
+
+
+# < Ligistic Regression: glm() >
+# < load the Data Set >
+NH11 <- readRDS("Rstatistics/dataSets/NatHealth2011.rds")
+labs <- attributes(NH11)$labels
+
+str(NH11$hypev)
+str(NH11$bmi)
+
+NH11$hypev <- factor(NH11$hypev, levels = c("2 No", "1 Yes"))
+
+str(NH11$hypev)
+
+hyp.out <- glm(hypev~ age_p + sex + sleep + bmi, 
+               data = NH11, 
+               family = "binomial")
+
+summary(hyp.out)
+coef(hyp.out)
+hyp.out.tab <- coef(summary(hyp.out))
+hyp.out.tab[, "Estimate" ] <- exp(coef(hyp.out))
+hyp.out.tab
+
+hyp.out.tab[, "Estimate" ] <- exp(hyp.out.tab[, "Estimate"])
+hyp.out.tab
+
+?expand.grid
+predData <- with(NH11, 
+          expand.grid(
+            age_p = c(33,53),
+            sex = "2 Female",
+            bmi = mean(bmi, na.rm = T),
+            sleep = mean(sleep, na.rm = T)
+          ))
+
+
+?predict
+
+cbind(predData, predict(hyp.out, newdata = predData, type = "response", se.fit = T, interval = 'confidence'))
+
+
+install.packages("effects")
+library(effects)
+plot(allEffects(hyp.out))
+?effectsTheme
